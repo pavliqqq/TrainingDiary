@@ -1,12 +1,13 @@
 @extends('layouts.main')
 @section('content')
     <div>
-        <form action="{{route('exercise.store')}}" method="post">
+        <form action="{{route('exercise.update',$exercise->id) }}" method="post">
             @csrf
+            @method('patch')
             <div class="form-group">
                 <label for="name">Name</label>
                 <input
-                    value="{{old('name')}}"
+                    value="{{ $exercise->name }}"
 
                     type="text" name="name" class="form-control" id="name" placeholder="Name">
                 @error('name')
@@ -16,12 +17,12 @@
             <div class="form-group">
                 <label for="category">Category</label>
                 <textarea type="text" name="category" class="form-control" id="category"
-                          placeholder="Content">{{old('content')}}</textarea>
+                          placeholder="Category">{{ $exercise->category }}</textarea>
                 @error('category')
                 <p class="text-danger">{{$message}}</p>
                 @enderror
             </div>
-            <button type="submit" class="btn btn-primary mt-3">Create</button>
+            <button type="submit" class="btn btn-primary mt-3">Update</button>
         </form>
     </div>
 @endsection
