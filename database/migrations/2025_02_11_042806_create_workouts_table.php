@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('workouts', function (Blueprint $table) {
+        Schema::create('workout', function (Blueprint $table) {
             $table->id();
             $table->date("date")->default(Carbon::now()->toDateTimeString());
             $table->text("notes")->nullable();
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('workouts');
+        Schema::dropIfExists('workout');
     }
 };
