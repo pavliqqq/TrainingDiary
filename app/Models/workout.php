@@ -8,8 +8,9 @@ class workout extends Model
 {
     protected $guarded;
 
-    public function exercise()
+    public function exercises()
     {
-        return $this->belongsToMany(exercise::class,'workout_workouts', 'workout_id', 'exercise_id');
+        return $this->belongsToMany(Exercise::class, 'exercise_workouts', 'workout_id', 'exercise_id')
+            ->withPivot('sets', 'reps', 'weight');
     }
 }

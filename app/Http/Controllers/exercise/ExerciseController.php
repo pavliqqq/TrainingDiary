@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\exercise;
 
 use App\Models\exercise;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ExerciseController
 {
@@ -16,12 +18,19 @@ class ExerciseController
         return view('exercise.create');
     }
 
-    public function store(){
-        $data = request()->validate([
+    public function store(Request $request){
+        $request->validate([
            'name' => 'required | string',
-            'category' => 'required | string'
+            'category' => 'required | string',
+            'image' => 'required | image | mimes:jpeg,png,jpg,gif|max:2048'
         ]);
-        exercise::create($data);
+
+        $path = $request->file('image')->store('exercises','public');
+        exercise::create([
+            'name' => $request->name,
+            'category' => $request->category,
+            'image' => "storage/$path"
+        ]);
         return redirect()->route('exercise.index');
     }
 
@@ -33,12 +42,20 @@ class ExerciseController
         return view('exercise.edit',compact ('exercise'));
     }
 
-    public function update(exercise $exercise){
-        $data = request()->validate([
+    public function update(Request $request, exercise $exercise){
+        $request->validate([
             'name' => 'string',
-            'category' => 'string'
+            'category' => 'string',
+            'image' => 'required | image | mimes:jpeg,png,jpg,gif|max:2048'
         ]);
-        $exercise->update($data);
+
+        $path = $request->file('image')->store('exercises','public');
+
+        $exercise->update([
+            'name' => $request->name,
+            'category' => $request->category,
+            'image' => "storage/$path"
+        ]);
         return redirect()->route('exercise.show',$exercise->id);
     }
 

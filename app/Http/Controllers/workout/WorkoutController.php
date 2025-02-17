@@ -50,19 +50,46 @@ class WorkoutController
     }
 
     public function show(workout $workout){
-        return view('workout.show',compact ('workout'));
+        $exercises = exercise::all();
+        $workout->load('exercises');
+        return view('workout.show',compact ('workout','exercises'));
     }
 
     public function edit(workout $workout){
-        return view('workout.edit',compact ('workout'));
+        $exercises = exercise::all();
+        $workout->load('exercises');
+        return view('workout.edit',compact ('workout','exercises'));
     }
 
-    public function update(workout $workout){
-        $data = request()->validate([
-            'date' => 'string',
-            'notes' => 'string'
+    public function update(Request $request, workout $workout){
+        $request->validate([
+            'date' => 'required|date',
+            'notes' => 'nullable|string',
+            'exercises' => 'required|array',
+            'exercises.*.id' => 'exists:exercises,id',
+            'exercises.*.sets' => 'required|integer|min:1',
+            'exercises.*.reps' => 'required|integer|min:1',
+            'exercises.*.weight' => 'nullable|numeric|min:0'
         ]);
-        $workout->update($data);
+
+        $workout->update([
+            'date' => $request->date,
+            'notes' => $request->notes
+        ]);
+
+
+        $syncData = [];
+
+        foreach ($request->exercises as $exerciseId => $exercise) {
+            $syncData[$exerciseId] = [
+                'sets' => $exercise['sets'] ?? 0,
+                'reps' => $exercise['reps'] ?? 0,
+                'weight' => $exercise['weight'] ?? null,
+            ];
+        }
+
+        $workout->exercises()->sync($syncData);
+
         return redirect()->route('workout.show',$workout->id);
     }
 
