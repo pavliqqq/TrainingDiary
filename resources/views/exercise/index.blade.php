@@ -35,5 +35,8 @@
                 </div>
             @endforeach
         </div>
+        <div class="mt-3">
+            {{ $exercises->links() }}
+        </div>
     </div>
 @endsection

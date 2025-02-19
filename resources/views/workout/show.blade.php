@@ -1,49 +1,64 @@
 @extends('layouts.main')
 @section('content')
+    <div class="container mt-4">
+        <!-- Заголовок тренировки -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Тренировка #{{ $workout->id }}</h2>
+            <span class="text-muted">📅 {{ \Carbon\Carbon::parse($workout->date)->format('d.m.Y') }}</span>
+        </div>
+
+        <!-- Вывод категорий упражнений -->
+        @php
+            $categories = $workout->exercises->pluck('category')->unique();
+        @endphp
+        <div class="mb-3">
+            <strong>Категории упражнений:</strong>
+            <span class="badge bg-primary">{{ $categories->implode('</span> <span class="badge bg-primary">') }}</span>
+        </div>
+
+        <!-- Упражнения -->
+        @if($workout->exercises->count() > 0)
+            <div class="row">
+                @foreach($workout->exercises as $exercise)
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <div class="card mb-3 shadow-sm">
+                            <a href="{{ route('exercise.show', $exercise->id) }}">
+                                <img src="{{ asset($exercise->image) }}" class="card-img-top workout-img" alt="{{ $exercise->name }}">
+                            </a>
+                            <div class="card-body text-center">
+                                <span class="badge bg-secondary">{{ $exercise->category }}</span>
+                                <a href="{{ route('exercise.show', $exercise->id) }}" class="fw-bold d-block mt-1">{{ $exercise->name }}</a>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="alert alert-warning text-center">Нет добавленных упражнений.</div>
+        @endif
+
+        <!-- Кнопки управления -->
+        <div class="d-flex gap-2 mt-3">
+            <a href="{{ route('workout.edit', $workout->id) }}" class="btn btn-info">✏️ Редактировать</a>
+
+            <form action="{{ route('workout.delete', $workout->id) }}" method="post" onsubmit="return confirm('Удалить тренировку?');">
+                @csrf
+                @method('delete')
+                <button type="submit" class="btn btn-danger">🗑️ Удалить</button>
+            </form>
+
+            <a href="{{ route('workout.index') }}" class="btn btn-secondary">🔙 Назад</a>
+        </div>
+    </div>
+
+    <!-- Стилизация картинок -->
     <style>
-        .exercise-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            gap: 20px;
-        }
-
-        .exercise-item {
-            width: 23%; /* Четыре элемента в строке */
-            text-align: center;
-        }
-
-        .exercise-item img {
+        .workout-img {
             width: 100%;
-            height: 150px; /* Фиксированная высота */
+            height: 180px; /* Фиксированная высота */
             object-fit: cover; /* Обрезка без искажений */
-            border-radius: 8px; /* Скругление углов */
+            border-radius: 8px;
         }
     </style>
 
-
-    <div>
-        <div><a href="#">{{ $workout->id . '. ' . $workout->date }}</a></div>
-    </div>
-
-    <div class="exercise-container">
-        @foreach($workout->exercises as $exercise)
-            <div class="exercise-item">
-                <a href="{{route('exercise.show', $exercise->id)}}"><img src="{{ asset($exercise->image) }}" alt = ""></a>
-                <a href="{{route('exercise.show', $exercise->id)}}">{{ $exercise->name }}</a>
-            </div>
-        @endforeach
-    </div>
-
-    <div class="d-inline-flex">
-        <a href="{{route('workout.edit',$workout->id)}}" class="btn btn-info mt-3">Edit</a>
-        <form action="{{route('workout.delete',$workout->id)}}" method="post">
-            @csrf
-            @method('delete')
-            <input type="submit" value="Delete" class="btn btn-danger mt-3">
-        </form>
-    </div>
-    <div>
-        <a href="{{route('workout.index')}}" class="btn btn-secondary mt-3">Back</a>
-    </div>
 @endsection

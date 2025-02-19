@@ -10,7 +10,7 @@ class ExerciseController
 {
     public function index()
     {
-        $exercises = exercise::all();
+        $exercises = exercise::paginate(8);
         return view('exercise.index',compact('exercises'));
     }
 

@@ -11,7 +11,7 @@ class WorkoutController
 {
     public function index()
     {
-        $workouts = workout::all();
+        $workouts = Workout::orderBy('date', 'desc')->paginate(6);
         return view('workout.index',compact('workouts'));
     }
 
@@ -52,6 +52,7 @@ class WorkoutController
     public function show(workout $workout){
         $exercises = exercise::all();
         $workout->load('exercises');
+
         return view('workout.show',compact ('workout','exercises'));
     }
 
