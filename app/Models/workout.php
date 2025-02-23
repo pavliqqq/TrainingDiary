@@ -13,4 +13,9 @@ class workout extends Model
         return $this->belongsToMany(Exercise::class, 'exercise_workouts', 'workout_id', 'exercise_id')
             ->withPivot('sets', 'reps', 'weight');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

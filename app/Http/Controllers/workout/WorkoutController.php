@@ -11,7 +11,7 @@ class WorkoutController
 {
     public function index()
     {
-        $workouts = Workout::orderBy('date', 'desc')->paginate(6);
+        $workouts = auth()->user()->workouts()->orderBy('date', 'desc')->paginate(6);
         return view('workout.index',compact('workouts'));
     }
 
@@ -34,6 +34,7 @@ class WorkoutController
         $workout = Workout::create([
             'date' => $request->date,
             'notes' => $request->notes,
+            'user_id' => auth()->id(),
         ]);
 
         foreach ($request->exercises as $exercise) {
